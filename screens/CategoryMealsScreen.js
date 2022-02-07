@@ -1,32 +1,45 @@
 import React from "react";
-import { View, FlatList, Text, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 
-import { CATEGORIES, MEALS } from "../data/dummy-data";
+import { CATEGORIES } from "../data/dummy-data";
 import MealItem from "../components/MealItem";
 
 const findCategoryById = (catId) => CATEGORIES.find((cat) => cat.id === catId);
 
 const CategoryMealScreen = (props) => {
 
-  const renderMealItem = ({item}) => (
-    <MealItem
-      item={item}
-          onSelectMeal={() => {
-              props.navigation.navigate({
-                  routeName: "MealDetail",
-                  params: { item }
-              })
-          }}
-    />
-  );
+  const favoriteMeals = useSelector((state) => state.meals.favoriteMeals);
 
-  const filteredMeals = MEALS.filter((meal) =>
+  const renderMealItem = ({ item }) => {
+    const isFav = favoriteMeals.some(fav => fav.id === item.id);
+    return (
+      <MealItem
+        item={item}
+        onSelectMeal={() => {
+          props.navigation.navigate({
+            routeName: "MealDetail",
+            params: { item, isFav },
+          });
+        }}
+      />
+    );
+  };
+
+  const availableMeals = useSelector((state) => {
+    return state.meals.filteredMeals;
+  });
+
+  const filteredMeals = availableMeals.filter((meal) =>
     meal.categoryIds.includes(props.navigation.getParam("categoryId"))
   );
 
-  return (
-    <FlatList numColumns={1} renderItem={renderMealItem} data={filteredMeals} />
-  );
+  const emptyState = <View style={styles.screen}>
+    <Text>No meals here. Please, check your filters...</Text>
+  </View>
+
+  return filteredMeals && filteredMeals.length > 0 ?  
+    <FlatList numColumns={1} renderItem={renderMealItem} data={filteredMeals} /> : emptyState;
 };
 
 CategoryMealScreen.navigationOptions = (navigationData) => {

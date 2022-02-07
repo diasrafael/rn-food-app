@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Switch } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 
 import Colors from "../constants/Colors";
 import CustomHeaderButton from "../components/CustomHeaderButton";
 import DefaulText from "../components/DefaultText";
+import { useDispatch } from "react-redux";
+import { updateFilters as updateFiltersAction } from "../store/actions/filters";
 
 const CustomSwitch = (props) => {
   return (
@@ -23,11 +25,31 @@ const CustomSwitch = (props) => {
   );
 };
 
-const FiltersScreen = (props) => {
+const FiltersScreen = ({ navigation }) => {
   const [isGlutenFree, setIsGlutenFree] = useState(false);
   const [isLactoseFree, setIsLactoseFree] = useState(false);
   const [isVegan, setIsVegan] = useState(false);
   const [isVegeterian, setIsVegeterian] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const updateFilters = useCallback(
+    () =>
+      dispatch(
+        updateFiltersAction({
+          isGlutenFree,
+          isLactoseFree,
+          isVegan,
+          isVegeterian,
+        })
+      ),
+    [isGlutenFree, isLactoseFree, isVegan, isVegeterian]
+  );
+
+  useEffect(
+    () => navigation.setParams({ updateFilters }),
+    [updateFilters]
+  );
 
   return (
     <View style={styles.screen}>
@@ -56,7 +78,9 @@ const FiltersScreen = (props) => {
   );
 };
 
-FiltersScreen.navigationOptions = (navData) => {
+FiltersScreen.navigationOptions = ({ navigation }) => {
+  const updateFilters = navigation.getParam("updateFilters");
+
   return {
     headerTitle: "Filter Meals",
     headerLeft: (
@@ -64,16 +88,19 @@ FiltersScreen.navigationOptions = (navData) => {
         <Item
           title="Menu"
           iconName="ios-menu"
-          onPress={() => navData.navigation.toggleDrawer()}
+          onPress={() => navigation.toggleDrawer()}
         />
       </HeaderButtons>
     ),
-  headerRight: (
+    headerRight: (
       <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
         <Item
           title="Menu"
           iconName="ios-save"
-          onPress={() => console.log('saving...')}
+          onPress={() => {
+            updateFilters();
+            navigation.navigate("Categories")
+          }}
         />
       </HeaderButtons>
     ),

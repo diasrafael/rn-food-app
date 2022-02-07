@@ -8,6 +8,7 @@ import mealsReducer from "./store/reducers/meals";
 
 import { LogBox } from "react-native";
 
+//Ignore warning regarding old versions of React Navigation lib
 LogBox.ignoreLogs(["It appears"]);
 
 const rootReducer = combineReducers({ meals: mealsReducer });

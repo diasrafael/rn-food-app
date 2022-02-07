@@ -1,29 +1,40 @@
 import React from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
 
-import { MEALS } from "../data/dummy-data";
 import MealGridTile from "../components/MealItem";
 
 const FavoritesScreen = ({ navigation }) => {
-  return (
-    <View style={styles.screen}>
-      <FlatList
-        style={{width: '100%'}}
-        data={MEALS}
+
+  const favoriteMeals = useSelector((state) => state.meals.favoriteMeals);
+
+  let content = <Text>What!? No favorites yet?</Text>
+
+  if (favoriteMeals.length > 0) {
+    content = <FlatList
+        style={{ width: "100%" }}
+        data={favoriteMeals}
         renderItem={({ item }) => (
           <MealGridTile
             item={item}
-                onSelectMeal={() => {
+            onSelectMeal={() => {
               navigation.navigate({
                 routeName: "MealDetail",
                 params: {
                   item,
+                  isFav: true
                 },
               });
             }}
           />
         )}
       />
+  }
+
+
+  return (
+    <View style={styles.screen}>
+      {content}
     </View>
   );
 };

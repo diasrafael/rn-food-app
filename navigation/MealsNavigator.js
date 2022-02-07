@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "react-navigation-tabs"
 import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs";
 import { createDrawerNavigator } from "react-navigation-drawer";
 import { Ionicons } from "@expo/vector-icons";
-import { Platform } from "react-native";
+import { Platform, StatusBar } from "react-native";
 
 import CategoriesScreen from "../screens/CategoriesScreen";
 import CategoryMealsScreen from "../screens/CategoryMealsScreen";
@@ -16,12 +16,12 @@ import Colors from "../constants/Colors";
 const defaultNavigationOptions = {
   headerStyle: {
     backgroundColor: Colors.primaryColor,
-    paddingTop: 20,
+    paddingTop: StatusBar.currentHeight,
     marginBottom: 10,
     height: 60,
   },
   headerTitleStyle: {
-    fontFamily: 'open-sans'
+    fontFamily: "open-sans",
   },
   headerTintColor: "white",
 };
